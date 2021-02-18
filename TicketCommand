@@ -1,0 +1,18 @@
+public class TicketCommand implements ServerCommand {
+	public void performCommand(Member m, TextChannel channel, Message message) {
+		//überprüft ob der Benutzer genügend Rechte hat
+		if(m.hasPermission(Permission.MANAGE_CHANNEL)) {
+			//splittet den String/Befehl vom Benutzer auf immer bei " "
+			String[] args = message.getContentDisplay().split(" ");
+			//wenn die länge 2 ist dann... (z.B. "!ticket close" <- Länge == 2
+			if(args.length == 2) {
+				//wenn das zweite argument "close" ist dann... (z.B. "!ticket 123" klappt nicht, es muss an zweiter stelle ein "close" hin
+				if(args[1].equalsIgnoreCase("close")){
+					//dann übergibt es die Werte an die onDelete Methode
+					TicketSystem.onDelete(m, channel);
+				}
+			}
+		}
+		message.delete().queue();
+	}
+}

@@ -1,0 +1,44 @@
+public class TicketSystem {
+
+    public static void onCreate(Member m){
+        //Hier nimmt es den Server mit der festgelegten ID, ersetzte GUILD_ID mit der ID von deinem Server -> Veriss nicht hinter die ID den Buchstaben "L" zu schreiben! So erkennt Java dass es ich um die Einheit Long handelt.
+        Guild g = DiscordBot.INSTANCE.shardMan.getGuildById(123123123L);
+        //Hier nimmt es die Kategorie mit der festgelegten ID, ersetzte KATEGORIE_ID mit der ID von der Kategorie, wo die TextChannel erstellt werden sollen.
+        Category c = g.getCategoryById(123123123L);
+        //Hier wird des TextChannel erstellt: den namen kannst du einfach anpassen
+        TextChannel tc = c.createTextChannel("NAME_VOM_NEUEN_CHANNEL").complete();
+        //r1 = Supporter Rolle
+        Role r1 = g.getRoleById(123123123L);
+        //r2 = @everyone Rolle
+        Role r2 = g.getRoleById(123123123L);
+        //r3 = muted Rolle
+        Role r3 = g.getRoleById(123123123L);
+        //hier bekommt die Rolle r1 (Supporter Rolle) Rechte, um in diesen Channel zu sehen, zu schreiben, zu lesen und den Verlauf zu sehen
+        tc.getManager().getChannel().upsertPermissionOverride(r1).setAllow(Permission.VIEW_CHANNEL, Permission.MESSAGE_WRITE, Permission.MESSAGE_READ, Permission.MESSAGE_HISTORY).queue();
+        //hier bekommt die Rolle r2 (@everyone Rolle) Rechte abgezogen, um in diesen Channel nicht zu sehen, nicht zu schreiben, nicht zu lesen und nicht den Verlauf zu sehen
+        tc.getManager().getChannel().upsertPermissionOverride(r2).setDeny(Permission.VIEW_CHANNEL, Permission.MESSAGE_WRITE, Permission.MESSAGE_READ, Permission.MESSAGE_HISTORY).queue();
+        //hier bekommt die Rolle r3 (Muted Rolle) Rechte abgezogen, um in diesen Channel nicht zu sehen, nicht zu schreiben, nicht zu lesen und nicht den Verlauf zu sehen
+        tc.getManager().getChannel().upsertPermissionOverride(r3).setDeny(Permission.VIEW_CHANNEL, Permission.MESSAGE_WRITE, Permission.MESSAGE_READ, Permission.MESSAGE_HISTORY).queue();
+        //Hier bekommt der Spieler, welcher das Ticket eröffnet hat Rechte, um in diesen Channel zu sehen, zu schreiben, zu lesen und den Verlauf zu sehen
+        tc.getManager().getChannel().upsertPermissionOverride(m).setAllow(Permission.VIEW_CHANNEL, Permission.MESSAGE_WRITE, Permission.MESSAGE_READ, Permission.MESSAGE_HISTORY).queue();
+
+        EmbedBuilder builder = new EmbedBuilder();
+        builder.setTitle("**SUPPORT TICKET**");
+        LocalDate now = LocalDate.now();
+        LocalTime now1 = LocalTime.now();
+        builder.setColor(2345895);
+        builder.setDescription((CharSequence) "Erstellt von: "+m.getEffectiveName()+"\nErstellt um: "+now1+"\nErstellt am: "+now+"\n\n"+m.getEffectiveName()+" schildere hier dein Problem!");
+        builder.setFooter("TicketSystem    -    " + now+" - "+now1);
+        tc.sendMessage(builder.build()).queue();
+    }
+
+    public static void onDelete(Member m, TextChannel tc){
+        //hier nimmt es die festgelegte Kategorie, diese muss mit der oberen ID identisch sein
+        Category c1 = tc.getGuild().getCategoryById(123123123L);
+        //hier wird überprüft ob der angegebene channel in der festgelegten Kategorie ist
+        if(tc.getParent().equals(c1)){
+            //anschließend wird der channel gelöscht
+            tc.delete().queue();
+        }
+    }
+}

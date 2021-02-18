@@ -1,0 +1,18 @@
+try {
+  if (set.next()) {
+      long rollenid = set.getLong("rollenid");
+      //TICKET_ROLLEN_ID musst du mit der ID von der gerade eben neu erstellen rolle ersetzen
+      if(rollenid == TICKET_ROLLEN_ID){
+          //das entfernt die Reaction vom Benutzer
+          event.getReaction().removeReaction().queue();
+          //hier wird die onCreate Methode aufgerufen
+          TicketSystem.onCreate(event.getMember());
+      }else {
+          Guild guild = event.getGuild();
+          guild.addRoleToMember(event.getMember(), guild.getRoleById(rollenid)).queue();
+      }
+  }
+}
+catch (SQLException e) {
+  e.printStackTrace();
+}
